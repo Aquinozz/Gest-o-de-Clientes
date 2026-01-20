@@ -1,2 +1,2 @@
-# Gest-o-de-Clientes
-Sistema de Gestão de clientes usando Flask, desenvolvida para praticar minhas habilidades
+# Gestão de Usuários
+Sistema de Gestão de usuáriosusando Flask, desenvolvida para praticar minhas habilidades
