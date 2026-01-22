@@ -4,7 +4,7 @@ import datetime
 
 class Cliente(Model):
     nome = CharField()
-    email = CharField()
+    email = CharField(unique=True)
     data_criacao = DateTimeField(default=datetime.datetime.now)
 
     class Meta:

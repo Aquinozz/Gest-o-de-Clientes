@@ -1,4 +1,5 @@
 from flask import Blueprint, render_template, request
+from peewee import IntegrityError
 from database.models.cliente import Cliente
 
 cliente_route = Blueprint('cliente', __name__)
@@ -14,15 +15,17 @@ def lista_clientes():
 @cliente_route.route('/', methods=['POST'])
 def inserir_cliente():
     """ inserir os dados do cliente """
-    
     data = request.json
     
-    novo_usuario = Cliente.create(
-        nome=data['nome'],
-        email=data['email']
-    )
+    try:
+        novo_usuario = Cliente.create(
+            nome=data['nome'],
+            email=data['email']
+        )
+        return render_template('item_cliente.html', cliente=novo_usuario)
     
-    return render_template('item_cliente.html', cliente=novo_usuario)
+    except IntegrityError:
+        return "Erro: Este e-mail já está cadastrado.", 400
     
 
 @cliente_route.route('/new')
@@ -49,18 +52,20 @@ def form_edit_cliente(cliente_id):
 @cliente_route.route('/<int:cliente_id>/update', methods=['PUT'])
 def atualizar_cliente(cliente_id):
     """ atualizar informacoes do cliente """
-    
     data = request.json
     
-    # obter usuario pelo id
-    cliente_editado = Cliente.get_by_id(cliente_id)
-            
-    # editar o usuario
-    cliente_editado.nome = data['nome']
-    cliente_editado.email = data['email']
-    cliente_editado.save()
+    try:
+        cliente_editado = Cliente.get_by_id(cliente_id)
+        cliente_editado.nome = data['nome']
+        cliente_editado.email = data['email']
+        cliente_editado.save() 
 
-    return render_template('item_cliente.html', cliente=cliente_editado)
+        return render_template('item_cliente.html', cliente=cliente_editado)
+    
+    except IntegrityError:
+        return "Erro: Não foi possível atualizar. Este e-mail já pertence a outro usuário.", 400
+
+
     
 
 @cliente_route.route('/<int:cliente_id>/delete', methods=['DELETE'])
